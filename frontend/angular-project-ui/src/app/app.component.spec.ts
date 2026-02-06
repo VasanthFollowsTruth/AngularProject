@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'angularproject-ui' title`, () => {
+  it(`should have the 'angular-project-ui' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('angularproject-ui');
+    expect(app.title).toEqual('angular-project-ui');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angularproject-ui');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, angular-project-ui');
   });
 });

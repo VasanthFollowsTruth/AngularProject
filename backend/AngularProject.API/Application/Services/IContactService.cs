@@ -1,4 +1,5 @@
 using AngularProject.API.Domain.Entities;
+using Application.Common;
 
 namespace AngularProject.API.Application.Services
 {
@@ -13,6 +14,14 @@ namespace AngularProject.API.Application.Services
         Task<bool> UpdateAsync(int id, Contact contact);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<PagedResult<Contact>> GetPagedAsync(
+            int page,
+            int pageSize,
+            string? sortBy,
+            bool ascending);
+
+        Task<bool> EmailExistsAsync(string email);
     }
 }
 

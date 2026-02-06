@@ -2,6 +2,7 @@ using AngularProject.API.Application.Interfaces;
 using AngularProject.API.Domain.Entities;
 using AngularProject.API.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Application.Common;
 
 namespace AngularProject.API.Infrastructure.Repositories;
 
@@ -49,5 +50,53 @@ public class ContactRepository : IContactRepository
     {
         return await _context.Contacts
             .AnyAsync(x => x.Id == id);
+    }
+
+    public async Task<PagedResult<Contact>> GetPagedAsync(
+    int page,
+    int pageSize,
+    string? sortBy,
+    bool ascending)
+    {
+        var query = _context.Contacts.AsQueryable();
+
+        // Sorting
+        query = sortBy?.ToLower() switch
+        {
+            "firstname" => ascending
+                ? query.OrderBy(x => x.FirstName)
+                : query.OrderByDescending(x => x.FirstName),
+
+            "lastname" => ascending
+                ? query.OrderBy(x => x.LastName)
+                : query.OrderByDescending(x => x.LastName),
+
+            "email" => ascending
+                ? query.OrderBy(x => x.Email)
+                : query.OrderByDescending(x => x.Email),
+
+            _ => query.OrderBy(x => x.Id)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Contact>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount,
+            Items = items
+        };
+    }
+
+    public async Task<bool> EmailExistsAsync(string email)
+    {
+        return await _context.Contacts
+            .AnyAsync(x => x.Email == email);
     }
 }

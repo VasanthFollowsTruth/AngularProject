@@ -1,5 +1,6 @@
 using AngularProject.API.Application.Interfaces;
 using AngularProject.API.Domain.Entities;
+using Application.Common;
 
 namespace AngularProject.API.Application.Services;
 
@@ -25,6 +26,11 @@ public class ContactService : IContactService
     public async Task<Contact> CreateAsync(Contact contact)
     {
         contact.CreatedAt = DateTime.UtcNow;
+
+        if (await _repository.EmailExistsAsync(contact.Email))
+        {
+            throw new ArgumentException("Email already exists.");
+        }
 
         await _repository.AddAsync(contact);
 
@@ -66,5 +72,23 @@ public class ContactService : IContactService
         await _repository.DeleteAsync(contact);
 
         return true;
+    }
+
+    public async Task<PagedResult<Contact>> GetPagedAsync(
+    int page,
+    int pageSize,
+    string? sortBy,
+    bool ascending)
+    {
+        return await _repository.GetPagedAsync(
+            page,
+            pageSize,
+            sortBy,
+            ascending);
+    }
+
+    public async Task<bool> EmailExistsAsync(string email)
+    {
+        return await _repository.EmailExistsAsync(email);
     }
 }
