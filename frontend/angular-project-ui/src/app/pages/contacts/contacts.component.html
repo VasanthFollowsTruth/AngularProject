@@ -1,0 +1,241 @@
+<h3 class="mb-3">Contacts</h3>
+
+<button class="btn btn-success mb-3" (click)="openAdd()">
+
+    + Add Contact
+
+</button>
+
+<!-- Loader -->
+<div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border"></div>
+</div>
+
+<!-- Table -->
+<div class="table-responsive">
+    <table *ngIf="!loading && contacts" class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>S. No</th>
+
+                <th (click)="sort('firstName')" role="button">
+                    First Name
+                </th>
+
+                <th (click)="sort('lastName')" role="button">
+                    Last Name
+                </th>
+
+                <th (click)="sort('email')" role="button">
+                    Email
+                </th>
+
+                <th (click)="sort('phoneNumber')" role="button">
+                    Phone
+                </th>
+
+                <th (click)="sort('city')" role="button">
+                    City
+                </th>
+
+                <th (click)="sort('state')" role="button">
+                    State
+                </th>
+
+                <th (click)="sort('country')" role="button">
+                    Country
+                </th>
+
+                <th (click)="sort('address')" role="button">
+                    Address
+                </th>
+
+                <th (click)="sort('postalCode')" role="button">
+                    Postal Code
+                </th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr *ngFor="let c of contacts; let i = index" [class.highlight-row]="c.id === highlightedId">
+
+                <td>{{ (page - 1) * pageSize + i + 1 }}</td>
+                <td>{{ c.firstName }}</td>
+                <td>{{ c.lastName }}</td>
+                <td>{{ c.email }}</td>
+                <td>{{ c.phoneNumber }}</td>
+                <td>{{ c.city }}</td>
+                <td>{{ c.state }}</td>
+                <td>{{ c.country }}</td>
+                <td>{{ c.address }}</td>
+                <td>{{ c.postalCode }}</td>
+                <td>
+
+                    <button class="btn btn-sm btn-primary me-1" (click)="openEdit(c)">
+                        Edit
+                    </button>
+
+                    <button class="btn btn-sm btn-danger" (click)="openDelete(c)">
+                        Delete
+                    </button>
+
+                </td>
+            </tr>
+
+            <tr *ngIf="!loading && contacts.length === 0">
+                <td colspan="11" class="text-center">
+                    No records found
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade show d-block" *ngIf="showAddModal">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Add Contact</h5>
+                <button class="btn-close" (click)="closeModals()">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <app-contact-form [contact]="selectedContact" (save)="addContact($event)" (cancel)="closeModals()">
+                </app-contact-form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade show d-block" *ngIf="showEditModal">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Edit Contact</h5>
+                <button class="btn-close" (click)="closeModals()">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <app-contact-form [contact]="selectedContact" [isEdit]="true" (save)="updateContact($event)"
+                    (cancel)="closeModals()">
+                </app-contact-form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade show d-block" *ngIf="showDeleteModal">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Confirm Delete</h5>
+                <button class="btn-close" (click)="closeModals()">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                Are you sure you want to delete
+                <strong>
+                    {{ selectedContact?.firstName }}
+                    {{ selectedContact?.lastName }}
+                </strong>
+                ?
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary" (click)="closeModals()">
+
+                    Cancel
+                </button>
+
+                <button class="btn btn-danger" (click)="deleteContact()">
+
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div *ngIf="totalCount > 0" class="d-flex justify-content-between align-items-center mb-2">
+
+    <small class="text-muted">
+
+        Showing
+        {{ startRecord }}
+        -
+        {{ endRecord }}
+        of
+        {{ totalCount }}
+        records
+
+    </small>
+
+</div>
+
+<!-- Pagination -->
+<nav *ngIf="totalPages > 1">
+
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item" [class.disabled]="page === 1">
+
+            <button class="page-link" (click)="changePage(page - 1)">
+                Previous
+            </button>
+        </li>
+
+        <li class="page-item" *ngFor="let p of [].constructor(totalPages); let i = index"
+            [class.active]="page === i + 1">
+
+            <button class="page-link" (click)="changePage(i + 1)">
+                {{ i + 1 }}
+            </button>
+
+        </li>
+
+        <li class="page-item" [class.disabled]="page === totalPages">
+
+            <button class="page-link" (click)="changePage(page + 1)">
+                Next
+            </button>
+        </li>
+
+    </ul>
+
+</nav>

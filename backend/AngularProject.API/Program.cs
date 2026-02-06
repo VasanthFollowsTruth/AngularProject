@@ -18,6 +18,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Controllers
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddAutoMapper(
     typeof(ContactProfile).Assembly
 );
@@ -102,6 +113,8 @@ builder.Services.AddScoped<IContactService, ContactService>();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseCors("AllowAngular");
 
 if (app.Environment.IsDevelopment())
 {

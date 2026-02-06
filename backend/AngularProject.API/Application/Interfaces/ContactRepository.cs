@@ -75,7 +75,32 @@ public class ContactRepository : IContactRepository
                 ? query.OrderBy(x => x.Email)
                 : query.OrderByDescending(x => x.Email),
 
-            _ => query.OrderBy(x => x.Id)
+            "phonenumber" => ascending
+                ? query.OrderBy(x => x.PhoneNumber)
+                : query.OrderByDescending(x => x.PhoneNumber),
+
+            "address" => ascending
+                ? query.OrderBy(x => x.Address)
+                : query.OrderByDescending(x => x.Address),
+
+            "city" => ascending
+                ? query.OrderBy(x => x.City)
+                : query.OrderByDescending(x => x.City),
+
+            "state" => ascending
+                ? query.OrderBy(x => x.State)
+                : query.OrderByDescending(x => x.State),
+
+            "country" => ascending
+                ? query.OrderBy(x => x.Country)
+                : query.OrderByDescending(x => x.Country),
+
+            "postalcode" => ascending
+                ? query.OrderBy(x => x.PostalCode)
+                : query.OrderByDescending(x => x.PostalCode),
+
+            // Default: newest first
+            _ => query.OrderByDescending(x => x.CreatedAt)
         };
 
         var totalCount = await query.CountAsync();

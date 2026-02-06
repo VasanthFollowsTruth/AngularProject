@@ -25,6 +25,7 @@ public class ContactsController : ControllerBase
     }
 
     // GET: api/contacts
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -66,7 +67,7 @@ public class ContactsController : ControllerBase
 
     // GET: api/contacts/5
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         var contact = await _service.GetByIdAsync(id);
 
@@ -84,9 +85,15 @@ public class ContactsController : ControllerBase
     {
         var contact = _mapper.Map<Contact>(dto);
 
-        await _service.CreateAsync(contact);
+        var created = await _service.CreateAsync(contact);
 
-        return Ok();
+        var result = _mapper.Map<ContactReadDto>(created);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = result.Id },
+            result
+        );
     }
 
     // PUT: api/contacts/5
