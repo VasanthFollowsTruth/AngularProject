@@ -26,7 +26,6 @@ public sealed class Contact
     public string Email { get; set; } = null!;
 
     [Required]
-    [Phone]
     [MaxLength(20)]
     public string PhoneNumber { get; set; } = null!;
 

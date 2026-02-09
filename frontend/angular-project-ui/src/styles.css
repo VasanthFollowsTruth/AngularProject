@@ -1,1 +1,27 @@
-/* You can add global styles to this file, and also import other style files */
+.table tr.highlight-row > td {
+  background-color: #ffeeba !important;
+}
+
+.table tr.highlight-row > th {
+  background-color: #ffeeba !important;
+}
+
+.sortable-header {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.column-title {
+  cursor: default;
+}
+
+.sort-icon {
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  user-select: none;
+}
+
+.sort-icon:hover {
+  color: #0d6efd;
+}

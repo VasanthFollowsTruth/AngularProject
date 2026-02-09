@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { LoginRequest } from '../models/auth/login-request.model';
 import { LoginResponse } from '../models/auth/login-response.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,7 @@ export class AuthService {
 
   private baseUrl = `${environment.apiUrl}/auth`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(request: LoginRequest): Observable<LoginResponse> {
 
@@ -27,7 +28,11 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.clear();
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiresAt');
+    
+    this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
@@ -35,6 +40,15 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    return !!this.getToken();
+    return !!this.getToken() && !this.isTokenExpired();
+  }
+
+  isTokenExpired(): boolean {
+
+    const expiry = localStorage.getItem('expiresAt');
+
+    if (!expiry) return true;
+
+    return new Date(expiry) <= new Date();
   }
 }

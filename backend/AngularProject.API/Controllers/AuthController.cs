@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public IActionResult Login(LoginRequestDto request)
     {
-        // TEMP: Hardcoded user (for assessment/demo)
+        // TEMP: Hardcoded user for assessment
 
         if (request.Email != "admin@test.com"
             || request.Password != "123456")

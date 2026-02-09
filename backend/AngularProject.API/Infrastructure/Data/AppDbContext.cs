@@ -18,6 +18,43 @@ namespace AngularProject.API.Infrastructure.Data
             base.OnModelCreating(modelBuilder);
 
             ConfigureContact(modelBuilder);
+
+            modelBuilder.Entity<Contact>().HasData(
+
+                new Contact
+                {
+                    Id = 1,
+                    FirstName = "John",
+                    LastName = "Doe",
+                    Email = "john@test.com",
+                    PhoneNumber = "+919999999999",
+                    Address = "Street 1",
+                    City = "Chennai",
+                    State = "Tamil Nadu",
+                    Country = "India",
+                    PostalCode = "600001",
+
+                    CreatedAt = new DateTime(2025, 1, 1),
+                    IsDeleted = false
+                },
+
+                new Contact
+                {
+                    Id = 2,
+                    FirstName = "Jane",
+                    LastName = "Smith",
+                    Email = "jane@test.com",
+                    PhoneNumber = "+14155552671",
+                    Address = "Main Road",
+                    City = "New York",
+                    State = "NY",
+                    Country = "USA",
+                    PostalCode = "10001",
+
+                    CreatedAt = new DateTime(2025, 1, 2),
+                    IsDeleted = false
+                }
+            );
         }
 
         private static void ConfigureContact(ModelBuilder modelBuilder)
@@ -39,7 +76,7 @@ namespace AngularProject.API.Infrastructure.Data
                 .IsRequired();
 
             entity.HasIndex(x => x.Email)
-                .IsUnique();
+                .IsUnique().HasFilter("[IsDeleted] = 0");;
 
             entity.Property(x => x.PhoneNumber)
                 .HasMaxLength(20)
@@ -65,7 +102,6 @@ namespace AngularProject.API.Infrastructure.Data
                 .HasMaxLength(20)
                 .IsRequired();
 
-            // Soft delete filter
             entity.HasQueryFilter(x => !x.IsDeleted);
         }
     }

@@ -29,7 +29,7 @@ export class LoginComponent {
 
     this.authService.login(this.model).subscribe({
       next: () => {
-        this.router.navigate(['/contacts']);
+        this.router.navigate(['/']);
       },
       error: () => {
         this.error = 'Invalid credentials';

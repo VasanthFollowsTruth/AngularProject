@@ -25,7 +25,6 @@ public class ContactsController : ControllerBase
     }
 
     // GET: api/contacts
-    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -83,6 +82,17 @@ public class ContactsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(ContactCreateDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            throw new ArgumentException(
+                string.Join(" | ", errors)
+            );
+        }
+
         var contact = _mapper.Map<Contact>(dto);
 
         var created = await _service.CreateAsync(contact);
@@ -100,6 +110,17 @@ public class ContactsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, ContactUpdateDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+
+            throw new ArgumentException(
+                string.Join(" | ", errors)
+            );
+        }
+        
         var existing = await _service.GetByIdAsync(id);
 
         if (existing == null)

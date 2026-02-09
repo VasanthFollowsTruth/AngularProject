@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
@@ -62,6 +63,11 @@ public class ExceptionMiddleware
                 statusCode = HttpStatusCode.Unauthorized;
                 message = "Unauthorized access.";
                 break;
+
+            case ValidationException validationEx:
+                statusCode = HttpStatusCode.BadRequest;
+                message = validationEx.Message;
+                break;
         }
 
         // Show stack trace only in Development
@@ -84,7 +90,15 @@ public class ExceptionMiddleware
         context.Response.StatusCode = response.StatusCode;
 
         await context.Response.WriteAsync(
-            JsonSerializer.Serialize(response));
+            JsonSerializer.Serialize(
+                response,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy =
+                        JsonNamingPolicy.CamelCase
+                }
+            )
+        );
     }
 
 }

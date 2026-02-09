@@ -12,11 +12,27 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Application.Security;
 using Microsoft.OpenApi.Models;
+using Serilog;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog();
+
 // Controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
 builder.Services.AddCors(options =>
 {
@@ -112,6 +128,8 @@ builder.Services.AddScoped<IContactService, ContactService>();
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseCors("AllowAngular");
@@ -130,3 +148,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

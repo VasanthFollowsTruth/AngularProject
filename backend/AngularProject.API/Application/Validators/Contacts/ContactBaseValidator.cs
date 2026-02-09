@@ -33,7 +33,8 @@ public abstract class ContactBaseValidator<T>
 
         RuleFor(phoneNumber)
             .NotEmpty()
-            .MaximumLength(20);
+            .Matches(@"^(\+?[1-9]\d{1,14}|[6-9]\d{9})$")
+            .WithMessage("Enter a valid phone number (Indian or International).");
 
         RuleFor(address)
             .NotEmpty()

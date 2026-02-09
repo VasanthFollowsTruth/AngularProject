@@ -41,6 +41,12 @@ export class ContactsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const savedId = localStorage.getItem('highlightedContactId');
+
+    if (savedId) {
+      this.highlightedId = parseInt(savedId, 10);
+    }
+
     this.loadContacts();
   }
 
@@ -52,35 +58,13 @@ export class ContactsComponent implements OnInit {
       this.page,
       this.pageSize,
       this.sortBy || undefined,
-      this.order)
+      this.order
+    )
       .subscribe({
 
         next: (res: PagedResult<Contact>) => {
 
           this.contacts = res.items;
-
-          // Re-apply highlight after reload
-          if (this.highlightedId) {
-
-            const found = this.contacts.some(
-              c => c.id === this.highlightedId
-            );
-
-            console.log('Highlight found:', found);
-          }
-
-          if (this.highlightedId) {
-
-            const index = this.contacts.findIndex(
-              c => c.id === this.highlightedId
-            );
-
-            if (index > 0) {
-
-              const item = this.contacts.splice(index, 1)[0];
-              this.contacts.unshift(item);
-            }
-          }
 
           this.totalPages = res.totalPages;
           this.totalCount = res.totalCount;
@@ -104,6 +88,7 @@ export class ContactsComponent implements OnInit {
       this.order = 'asc';
     }
 
+    this.page = 1;
     this.loadContacts();
   }
 
@@ -171,23 +156,23 @@ export class ContactsComponent implements OnInit {
     this.contactService.create(contact).subscribe({
       next: (created) => {
 
-        console.log('Created:', created);
-
-        // Store highlight FIRST
         this.highlightedId = created.id!;
 
-        // Always go to first page
+        console.log('Setting highlight to:', this.highlightedId);
+
+        localStorage.setItem(
+          'highlightedContactId',
+          created.id!.toString()
+        );
+
+        this.sortBy = '';
+        this.order = 'asc';
+
         this.page = 1;
 
-        // Reload data
         this.loadContacts();
 
         this.closeModals();
-
-        // Remove highlight after 3s
-        setTimeout(() => {
-          this.highlightedId = null;
-        }, 3000);
       }
     });
   }
@@ -206,13 +191,32 @@ export class ContactsComponent implements OnInit {
 
   deleteContact(): void {
 
+    const deletedId = this.selectedContact.id!;
+
     this.contactService
-      .delete(this.selectedContact.id!)
+      .delete(deletedId)
       .subscribe({
+
         next: () => {
+
+          if (this.highlightedId === deletedId) {
+
+            this.highlightedId = null;
+            localStorage.removeItem('highlightedContactId');
+          }
+
           this.closeModals();
           this.loadContacts();
         }
       });
+  }
+
+  getSortIcon(column: string): string {
+
+    if (this.sortBy !== column) {
+      return '⇅'; // Sorting not activated
+    }
+
+    return this.order === 'asc' ? '▲' : '▼';
   }
 }
