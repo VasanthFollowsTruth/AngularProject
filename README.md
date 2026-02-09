@@ -79,7 +79,6 @@ cd backend/AngularProject.API
 Open:
 appsettings.json
 
-
 Update connection string:
 "ConnectionStrings": {
   "Default": "Server=.;Database=AngularProjectDb;Trusted_Connection=True;TrustServerCertificate=True"
@@ -127,8 +126,8 @@ src/environments/environment.ts
 
 Ensure if this matches with your localhost api URL:
 export const environment = {
-  apiUrl: 'http://localhost:5008/api'
-};
+        apiUrl: 'http://localhost:5008/api'
+    };
 
 4. Run Frontend and backend simultaneously in two different terminals
 1st terminal - run backend
